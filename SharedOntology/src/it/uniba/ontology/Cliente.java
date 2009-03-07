@@ -16,10 +16,15 @@ public class Cliente implements Concept {
 	private String cognome;
 	private String telefono;
 	private String prestazione;
-	private Date giornoPrenotazione;
-	private Date oraPrenotazione;
+	private Date dataPrenotazione;
 	
 	
+	
+	public Cliente() {
+	}
+
+
+
 	public Cliente(String nome, String cognome, String telefono,
 			String prestazione) {
 		super();
@@ -32,14 +37,13 @@ public class Cliente implements Concept {
 	
 
 	public Cliente(String nome, String cognome, String telefono,
-			String prestazione, Date giornoPrenotazione, Date oraPrenotazione) {
+			String prestazione, Date dataPrenotazione) {
 		super();
 		this.nome = nome;
 		this.cognome = cognome;
 		this.telefono = telefono;
 		this.prestazione = prestazione;
-		this.giornoPrenotazione = giornoPrenotazione;
-		this.oraPrenotazione = oraPrenotazione;
+		this.dataPrenotazione = dataPrenotazione;
 	}
 
 
@@ -69,18 +73,34 @@ public class Cliente implements Concept {
 
 
 	public Date getGiornoPrenotazione() {
-		return giornoPrenotazione;
+		return dataPrenotazione;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
 
 
-	public Date getOraPrenotazione() {
-		return oraPrenotazione;
+	public void setCognome(String cognome) {
+		this.cognome = cognome;
 	}
-	
-	
 
-	
-	
 
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+
+
+	public void setPrestazione(String prestazione) {
+		this.prestazione = prestazione;
+	}
+
+
+
+	public void setGiornoPrenotazione(Date giornoPrenotazione) {
+		this.dataPrenotazione = giornoPrenotazione;
+	}
 }

@@ -16,7 +16,8 @@ public class CentroPrenotazione implements Concept {
 	private String via;
 	private List prestazioni;
 	
-	
+	 // used by the Ontology support //
+	public CentroPrenotazione() {}
 	
 	public CentroPrenotazione(String nome, String telefono, String via) {
 		super();
@@ -49,4 +50,24 @@ public class CentroPrenotazione implements Concept {
 	public List getPrestazioni() {
 		return prestazioni;
 	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	public void setVia(String via) {
+		this.via = via;
+	}
+
+	public void setPrestazioni(List prestazioni) {
+		this.prestazioni = prestazioni;
+	}
+	
+	
+	
+	
 }
