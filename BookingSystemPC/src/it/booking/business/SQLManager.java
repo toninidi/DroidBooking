@@ -1,4 +1,4 @@
-package it.booking.sql;
+package it.booking.business;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

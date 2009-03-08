@@ -1,7 +1,6 @@
 package it.booking.business;
 
 import it.booking.agent.BookingAgent;
-import it.booking.sql.SQLManager;
 import it.booking.ui.MainUI;
 
 import java.awt.EventQueue;

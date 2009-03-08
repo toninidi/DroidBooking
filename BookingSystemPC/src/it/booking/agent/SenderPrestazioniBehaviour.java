@@ -1,6 +1,6 @@
 package it.booking.agent;
 
-import it.booking.sql.SQLManager;
+import it.booking.business.SQLManager;
 import it.uniba.ontology.BookingOntology;
 import it.uniba.ontology.CentroPrenotazione;
 import jade.content.ContentManager;
