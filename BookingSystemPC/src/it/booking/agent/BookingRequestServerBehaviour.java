@@ -5,7 +5,7 @@ import it.uniba.ontology.BookingOntology;
 import it.uniba.ontology.CentroPrenotazione;
 import it.uniba.ontology.Cliente;
 import it.uniba.ontology.Prenotazione;
-import it.uniba.ontology.PrenotazioneCompleta;
+import it.uniba.ontology.PrenotazioneConData;
 import jade.content.ContentElement;
 import jade.content.ContentManager;
 import jade.content.lang.Codec.CodecException;
@@ -46,8 +46,8 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 				ACLMessage reply = msg.createReply();
 				if(content instanceof Prenotazione){					
 					esitoPositivo = BookingHandler.gestisciPrenotazione((Prenotazione)content);					
-				}else if(content instanceof PrenotazioneCompleta){
-					esitoPositivo = BookingHandler.gestisciPrenotazioneCompleta((PrenotazioneCompleta)content);					
+				}else if(content instanceof PrenotazioneConData){
+					esitoPositivo = BookingHandler.gestisciPrenotazioneCompleta((PrenotazioneConData)content);					
 				}
 				if(esitoPositivo){				      	   
 					reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);

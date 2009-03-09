@@ -155,7 +155,7 @@ public class MainUI extends JFrame {
 		String dataString = formatter.format(calendar.getDate());		
 		
 		String[] columnNames = {"Ora","Cognome","Nome","Prestazione","Tel."};
-		String query = "SELECT OraInizio, Cognome, Nome,  Descrizione, Telefono FROM prenotazione, cliente WHERE Id_Cliente = cliente.id AND prenotazione.GiornoInizio  ='"+dataString+"';" ;
+		String query = "SELECT OraInizio, Cognome, Nome,  Descrizione, Telefono FROM prenotazione, cliente WHERE Id_Cliente = cliente.id AND prenotazione.GiornoInizio  ='"+dataString+"' ORDER BY OraInizio;" ;
 		try {
 			Vector<Object[]> data = SQLManager.executeQuery(query);
 			populateTable(columnNames, data);			
@@ -191,7 +191,7 @@ public class MainUI extends JFrame {
 		//anzichè presentare solo le righe relative al giorno scelto
 		initialize_table();
 		SimpleDateFormat formatter = new SimpleDateFormat();
-		formatter.applyPattern("hh:mm");
+		formatter.applyPattern("HH:mm");
 		DefaultTableModel aModel = (DefaultTableModel) table.getModel();	
 		if(data.size()>0){			
 			aModel.setColumnIdentifiers(columns);		

@@ -65,7 +65,7 @@ public class SenderPrestazioniBehaviour extends CyclicBehaviour {
 	
 	private List getPrestazioni() {
 		List result = new jade.util.leap.ArrayList();
-		String query = "SELECT NOME FROM "+ SQLManager.TABLE_PRESTAZIONI;
+		String query = "SELECT NOME FROM "+ SQLManager.TABLE_PRESTAZIONE;
 		Vector<Object[]> data = SQLManager.executeQuery(query);
 		for (Iterator<Object[]> iterator = data.iterator(); iterator.hasNext();) {
 			Object[] objects = (Object[]) iterator.next();

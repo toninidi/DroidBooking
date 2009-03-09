@@ -10,9 +10,10 @@ import java.util.Vector;
 
  public class SQLManager {
 	
-	 public static final String TABLE_PRESTAZIONI = "prestazione";
+	 public static final String TABLE_PRESTAZIONE = "prestazione";
 	 public static final String TABLE_CLIENTE = "cliente";
 	 public static String TABLE_PRENOTAZIONE = "prenotazione";
+	 public static final String DB_NAME = "bookingdb";
 	 
 	
 	private  static Connection connection = null;
