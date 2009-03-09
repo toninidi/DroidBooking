@@ -1,5 +1,6 @@
 package it.booking.agent;
 
+import it.booking.business.SQLManager;
 import it.booking.ui.MainUI;
 import it.uniba.ontology.*;
 import jade.content.ContentManager;
@@ -16,6 +17,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 public class BookingAgent extends Agent {
 	
 	
+	private static final long serialVersionUID = 1L;
+	
 	private ContentManager manager = (ContentManager)getContentManager();
 	private Codec codec = new SLCodec();
 	private Ontology bookingOntology = BookingOntology.getInstance();
@@ -27,6 +30,7 @@ public class BookingAgent extends Agent {
 	private static String KEY_INDIRIZZO = "indirizzo";
 	private static String VALUE_INDIRIZZO = "Via De Gasperi (palazzo di vetro)";
 	
+	public static CentroPrenotazione CENTRO = new CentroPrenotazione(NOME_CENTRO,VALUE_TELEFONO,VALUE_INDIRIZZO, SQLManager.getPrestazioni());
 	
 	private static MainUI gui;
 

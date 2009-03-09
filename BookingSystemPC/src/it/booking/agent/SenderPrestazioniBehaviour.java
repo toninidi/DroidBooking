@@ -1,6 +1,5 @@
 package it.booking.agent;
 
-import it.booking.business.SQLManager;
 import it.uniba.ontology.BookingOntology;
 import it.uniba.ontology.CentroPrenotazione;
 import jade.content.ContentManager;
@@ -10,14 +9,9 @@ import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
-import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.util.leap.List;
-
-import java.util.Iterator;
-import java.util.Vector;
 
 public class SenderPrestazioniBehaviour extends CyclicBehaviour {
 
@@ -35,12 +29,11 @@ public class SenderPrestazioniBehaviour extends CyclicBehaviour {
 		if (msg != null) {
 			System.out.println("REQUEST richiesta della lista di prestazioni");
 
-			AID senderAID = msg.getSender();			
 			ACLMessage reply = msg.createReply();
 			reply.setPerformative(ACLMessage.INFORM);
 			reply.setLanguage(codec.getName());
 			reply.setOntology(bookingOntology.getName());
-			CentroPrenotazione centro = new CentroPrenotazione("Brizzi","345677","Via dei cicci per fiaschi", getPrestazioni());
+			CentroPrenotazione centro = BookingAgent.CENTRO;
 			Action action = new Action();
 			action.setActor(myAgent.getAID());
 			action.setAction(centro);			
@@ -63,16 +56,7 @@ public class SenderPrestazioniBehaviour extends CyclicBehaviour {
 
 	}
 	
-	private List getPrestazioni() {
-		List result = new jade.util.leap.ArrayList();
-		String query = "SELECT NOME FROM "+ SQLManager.TABLE_PRESTAZIONE;
-		Vector<Object[]> data = SQLManager.executeQuery(query);
-		for (Iterator<Object[]> iterator = data.iterator(); iterator.hasNext();) {
-			Object[] objects = (Object[]) iterator.next();
-			result.add(objects[0].toString());			
-		}
-		return result;
-	}
+
 	
 	/*private String[] getPrestazioni() {
 		String[] result;
