@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
@@ -125,8 +126,10 @@ public class MainUI extends JFrame {
 	protected void getBooking() {
 		SimpleDateFormat formatter = new SimpleDateFormat();
 		formatter.applyPattern("yyyy-MM-dd");
-		String dataString = formatter.format(calendar.getDate());		
-		
+		Calendar date = Calendar.getInstance();
+		date.setTime(calendar.getDate());
+		date.set(Calendar.MONTH, date.get(Calendar.MONTH)-1);
+		String dataString = formatter.format(date.getTime());		
 		String[] columnNames = {"Ora","Cognome","Nome","Prestazione","Tel."};
 		String query = "SELECT OraInizio, Cognome, Nome,  Descrizione, Telefono FROM prenotazione, cliente WHERE Id_Cliente = cliente.id AND prenotazione.GiornoInizio  ='"+dataString+"' ORDER BY OraInizio;" ;
 		try {

@@ -97,7 +97,7 @@ import java.util.Vector;
 		int generatedKey = -1;
 		Calendar dataInizioPrenotazione = Calendar.getInstance();
 		Calendar dataFinePrenotazione = Calendar.getInstance();		
-		dataInizioPrenotazione.setTime(prenotazione.getGiornoPrenotazione());
+		dataInizioPrenotazione.setTime(prenotazione.getDataPrenotazione());
 		dataFinePrenotazione.setTimeInMillis(dataInizioPrenotazione.getTimeInMillis()+durataPrestazione);
 		int idCliente = insertCliente(prenotazione.getCliente());  
 		if(idCliente!=-1){

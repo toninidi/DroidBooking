@@ -56,8 +56,9 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 					System.out.println("E il caso di una PRENOTAZIONE CON DATA");
 					reply= setReplyContent(reply, (PrenotazioneConData)content);	
 				}	
-				System.out.println("Sto mandando il messaggio con Performative "+ reply.getPerformative());
+				//System.out.println("Sto mandando il messaggio con Performative "+ reply.getPerformative());
 				myAgent.send(reply);
+				System.out.println("Messaggio inviato "+ reply.getPerformative());
 			}
 		}
 		else {
@@ -71,15 +72,15 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 		boolean trovatoGiorno = false;
 		try {
 			conferma = BookingHandler.gestisciPrenotazione((Prenotazione)content);	
-			System.out.println("Inserita la prenotazione nel giorno "+conferma.getInizioPrenotazione());
-			trovatoGiorno = true;
+			if(conferma!=null){
+				System.out.println("Inserita la prenotazione nel giorno "+conferma.getInizioPrenotazione());
+				trovatoGiorno = true;
+			}
 		} catch (AvailableDayNotFoundException e) {
-			// Nessuno giorno libero trovato	
-			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			// Nessuno giorno libero trovato				
 			e.printStackTrace();
 		} catch (PrestazioneNotFoundException e) {
-			// TODO Auto-generated catch block
-			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			// TODO Auto-generated catch block			
 			e.printStackTrace();
 		}
 		if(trovatoGiorno){
@@ -88,15 +89,19 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			reply.setLanguage(codec.getName());
 			
 			try {
-				System.out.println("Sto riempiendo il contenuto");
+				//System.out.println("Sto riempiendo il contenuto");
 				manager.fillContent(reply, conferma);
 			} catch (CodecException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 			} catch (OntologyException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 			}
+		}else{
+			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 		}
 		return reply;
 	}
@@ -104,15 +109,32 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 	
 	
 	private ACLMessage setReplyContent(ACLMessage reply, PrenotazioneConData content) {
-		boolean esitoPositivo = false;
+		Conferma conferma = null;
+		boolean disponibilita = false;
+		System.out.println("Data richiesta: "+content.getDataPrenotazione());
 		try {
-			esitoPositivo = BookingHandler.gestisciPrenotazioneConData((PrenotazioneConData)content);
+			conferma = BookingHandler.gestisciPrenotazioneConData((PrenotazioneConData)content);
+			if(conferma!=null){
+				disponibilita = true;
+			}
 		} catch (PrestazioneNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(esitoPositivo){				      	   
+		if(disponibilita){				      	   
 			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+			try {
+				//System.out.println("Sto riempiendo il contenuto");
+				manager.fillContent(reply, conferma);
+			} catch (CodecException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			} catch (OntologyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			}
 		}else{
 			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 		}

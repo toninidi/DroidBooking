@@ -55,31 +55,5 @@ public class SenderPrestazioniBehaviour extends CyclicBehaviour {
 		}
 
 	}
-	
-
-	
-	/*private String[] getPrestazioni() {
-		String[] result;
-		String query = "SELECT NOME FROM "+ SQLManager.TABLE_PRESTAZIONI;
-		Vector<Object[]> data = SQLManager.executeQuery(query);
-		result = new String[data.size()];
-		for (int i = 0; i < data.size(); i++) {
-			Object[] objects = (Object[]) data.get(i);
-			result[i]=(objects[0].toString());	
-		}
-		return result;
-	}*/
-	
-
-	/*private ArrayList<String> getPrestazioni() {
-		ArrayList<String> result = new ArrayList<String>();
-		String query = "SELECT NOME FROM "+ SQLManager.TABLE_PRESTAZIONI;
-		Vector<Object[]> data = SQLManager.executeQuery(query);
-		for (Iterator<Object[]> iterator = data.iterator(); iterator.hasNext();) {
-			Object[] objects = (Object[]) iterator.next();
-			result.add(objects[0].toString());			
-		}
-		return result;
-	}*/
 
 }

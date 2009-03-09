@@ -10,7 +10,6 @@ import java.util.Vector;
 import it.booking.agent.BookingAgent;
 import it.booking.exception.AvailableDayNotFoundException;
 import it.booking.exception.PrestazioneNotFoundException;
-import it.uniba.ontology.CentroPrenotazione;
 import it.uniba.ontology.Cliente;
 import it.uniba.ontology.Conferma;
 import it.uniba.ontology.Prenotazione;
@@ -30,7 +29,7 @@ public class BookingHandler {
 		
 		Calendar date = Calendar.getInstance();
 		date.set(Calendar.YEAR, 2009);
-		date.set(Calendar.MONTH, 3);
+		date.set(Calendar.MONTH, 2);
 		date.set(Calendar.DAY_OF_MONTH, 23);
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
@@ -97,31 +96,40 @@ public class BookingHandler {
 		}else{
 			System.out.println("Orario trovato: "+printCalendar(date) +"-"+printCalendar(getCalendarFromMillis(date.getTimeInMillis()+durataPrestazione)));
 			//INSERIMENTO PRENOTAZIONE SUL DB
-			int idPrenotazione = SQLManager.insertPrenotazione(prenotazione, date, durataPrestazione);
-			// TODO completare la creazione dell'oggetto conferma
-			Conferma conferma = new Conferma(BookingAgent.CENTRO,date.getTime(),getCalendarFromMillis(date.getTimeInMillis()+durataPrestazione).getTime());
-			return conferma;
+			int idPrenotazione = SQLManager.insertPrenotazione(prenotazione, date, durataPrestazione);		
+			if(idPrenotazione!=-1){
+				Conferma conferma = new Conferma(BookingAgent.CENTRO,prenotazione.getPrestazione(),date.getTime(),getCalendarFromMillis(date.getTimeInMillis()+durataPrestazione).getTime(),idPrenotazione);
+				return conferma;
+			}else{
+				return null;
+			}
 		}
 	}
 	
-	public static boolean gestisciPrenotazioneConData(PrenotazioneConData prenotazione) throws PrestazioneNotFoundException{
+	public static Conferma gestisciPrenotazioneConData(PrenotazioneConData prenotazione) throws PrestazioneNotFoundException{
 		long durataPrestazione = SQLManager.getDurataFromPrestazione(prenotazione.getPrestazione());
-		System.out.println(printCalendar(getCalendarFromMillis(durataPrestazione)));
+		//System.out.println(printCalendar(getCalendarFromMillis(durataPrestazione)));
 		
 		Calendar date = getInstance();
-		date.setTime(prenotazione.getGiornoPrenotazione());
+		date.setTime(prenotazione.getDataPrenotazione());
 		if(controllaDisponibilita(date,durataPrestazione)){
-			SQLManager.insertPrenotazione(prenotazione, durataPrestazione);
-			return true;
+			int idPrenotazione = SQLManager.insertPrenotazione(prenotazione, durataPrestazione);
+			if(idPrenotazione!=-1){
+				Conferma conferma = new Conferma(BookingAgent.CENTRO,prenotazione.getPrestazione(),date.getTime(),getCalendarFromMillis(date.getTimeInMillis()+durataPrestazione).getTime(),idPrenotazione);
+				return conferma;
+			}else{
+				return null;
+			}			
 		}else{
-			return false;
+			return null;
 		}
 		
 	}
 
 	
 	
-	private static boolean controllaDisponibilita(Calendar date, long durataPrestazione) {	
+	private static boolean controllaDisponibilita(Calendar date, long durataPrestazione) {
+		System.out.println("Data richiesta: "+printCalendar(date));
 		ArrayList<long[]> intervalliDisponibili = getIntervalliDisponibili(date);
 		long[] currInterval = null;
 		Calendar dateNormalized = getInstance();
