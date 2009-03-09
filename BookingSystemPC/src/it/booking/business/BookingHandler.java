@@ -1,18 +1,26 @@
 package it.booking.business;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Vector;
 
+import it.booking.agent.BookingAgent;
+import it.booking.exception.AvailableDayNotFoundException;
+import it.booking.exception.PrestazioneNotFoundException;
+import it.uniba.ontology.CentroPrenotazione;
+import it.uniba.ontology.Cliente;
+import it.uniba.ontology.Conferma;
 import it.uniba.ontology.Prenotazione;
 import it.uniba.ontology.PrenotazioneConData;
 
 public class BookingHandler {
 		
+	// il numero di giorni da considerare per trovare un intervallo libero
+	private static final int TENTATIVI_MASSIMI = 100;
+	
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
 	static ArrayList<long[]> intervalli = getIntervalliPrenotazione();
@@ -24,61 +32,109 @@ public class BookingHandler {
 		date.set(Calendar.YEAR, 2009);
 		date.set(Calendar.MONTH, 3);
 		date.set(Calendar.DAY_OF_MONTH, 23);
-		date.set(Calendar.HOUR_OF_DAY, 17);
-		date.set(Calendar.MINUTE, 30);
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
 		date.set(Calendar.SECOND, 0);
 		
-		//Prenotazione prenot = new Prenotazione();
-		PrenotazioneConData prenot = new PrenotazioneConData();
-		prenot.setPrestazione("Raggi");
-		prenot.setGiornoPrenotazione(date.getTime());
-		gestisciPrenotazioneConData(prenot);		
-		//gestisciPrenotazione(prenot);
+		Prenotazione prenot = new Prenotazione();
+		//PrenotazioneConData prenot = new PrenotazioneConData();
+		prenot.setPrestazione("Visita Med");
+		//prenot.setGiornoPrenotazione(date.getTime());
+		prenot.setCliente(new Cliente("ciccio","cappuccio","0803567889"));
+		//gestisciPrenotazioneConData(prenot);		
+		try {
+			gestisciPrenotazione(prenot);
+		} catch (AvailableDayNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PrestazioneNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		/*
-		ArrayList<long[]> a = getIntervalliDisponibili(date);
+		
+		/*ArrayList<long[]> a = getIntervalliDisponibili(date);
 		for (Iterator iterator = a.iterator(); iterator.hasNext();) {
 			long[] ls = (long[]) iterator.next();
-			System.out.println("Intervallo: "+printCalendar(getCalendarFromMillis(ls[0]))+"-"+printCalendar(getCalendarFromMillis(ls[1])));
+			//System.out.println("Intervallo: "+printCalendar(getCalendarFromMillis(ls[0]))+"-"+printCalendar(getCalendarFromMillis(ls[1])));
 			
 		}*/
 		
 	}
+
 	
-	public static boolean gestisciPrenotazione(Prenotazione prenotazione){
-		long durataPrestazione = getDurataFromPrestazione(prenotazione.getPrestazione());
-		//trovaPrimoIntervalloDisponibile(Calendar.getInstance().getTime(), durataPrestazione.getTimeInMillis());
+	public static Conferma gestisciPrenotazione(Prenotazione prenotazione) throws AvailableDayNotFoundException, PrestazioneNotFoundException{		
+		long durataPrestazione = SQLManager.getDurataFromPrestazione(prenotazione.getPrestazione());
+		long oneDay = 24*60*60*1000;
 		Calendar date = Calendar.getInstance();
-		date.set(Calendar.YEAR, 2009);
-		date.set(Calendar.MONTH, 3);
-		date.set(Calendar.DAY_OF_MONTH, 23);
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
 		date.set(Calendar.SECOND, 0);
-		Calendar result = trovaPrimoIntervalloDisponibile(date, durataPrestazione);
-		System.out.println("Orario trovato: "+printCalendar(result) +"-"+printCalendar(getCalendarFromMillis(result.getTimeInMillis()+durataPrestazione)));
-		return true;
+		ArrayList<long[]> intervalliDisponibili; 
+		long[] currInterval = null;
+		boolean trovato = false;
+		int tentativi = 0;
+		while(!trovato && tentativi <= TENTATIVI_MASSIMI){	
+			intervalliDisponibili =  getIntervalliDisponibili(date);
+			for (int i = 0; i < intervalliDisponibili.size() && !trovato; i++) {
+				currInterval = intervalliDisponibili.get(i);
+				//System.out.println("Intervallo corrente: "+printCalendar(getCalendarFromMillis(currInterval[0]))+"-"+printCalendar(getCalendarFromMillis(currInterval[1])));
+				if(currInterval[1] -currInterval[0] >= durataPrestazione){
+					trovato = true;
+					date.set(Calendar.HOUR_OF_DAY, getCalendarFromMillis(currInterval[0]).get(Calendar.HOUR_OF_DAY));
+					date.set(Calendar.MINUTE, getCalendarFromMillis(currInterval[0]).get(Calendar.MINUTE));
+					date.set(Calendar.SECOND, getCalendarFromMillis(currInterval[0]).get(Calendar.SECOND));
+				}
+			}
+			if(!trovato){
+				//giorno successivo
+				date.setTimeInMillis(date.getTimeInMillis() + oneDay);
+			}
+			tentativi++;
+		}
+		if(!trovato){
+			throw new AvailableDayNotFoundException("Non è stato trovato un giorno libero entro "+TENTATIVI_MASSIMI+ " giorni");
+		}else{
+			System.out.println("Orario trovato: "+printCalendar(date) +"-"+printCalendar(getCalendarFromMillis(date.getTimeInMillis()+durataPrestazione)));
+			//INSERIMENTO PRENOTAZIONE SUL DB
+			int idPrenotazione = SQLManager.insertPrenotazione(prenotazione, date, durataPrestazione);
+			// TODO completare la creazione dell'oggetto conferma
+			Conferma conferma = new Conferma(BookingAgent.CENTRO,date.getTime(),getCalendarFromMillis(date.getTimeInMillis()+durataPrestazione).getTime());
+			return conferma;
+		}
 	}
 	
-	public static boolean gestisciPrenotazioneConData(PrenotazioneConData prenotazione){
-		long durataPrestazione = getDurataFromPrestazione(prenotazione.getPrestazione());
+	public static boolean gestisciPrenotazioneConData(PrenotazioneConData prenotazione) throws PrestazioneNotFoundException{
+		long durataPrestazione = SQLManager.getDurataFromPrestazione(prenotazione.getPrestazione());
+		System.out.println(printCalendar(getCalendarFromMillis(durataPrestazione)));
+		
 		Calendar date = getInstance();
 		date.setTime(prenotazione.getGiornoPrenotazione());
-		Calendar dateNormalized = getInstance();
-		dateNormalized.set(Calendar.HOUR_OF_DAY, date.get(Calendar.HOUR_OF_DAY));
-		dateNormalized.set(Calendar.MINUTE, date.get(Calendar.MINUTE));
-		dateNormalized.set(Calendar.SECOND, date.get(Calendar.SECOND));
-		return controllaDisponibilita(getIntervalliDisponibili(date),dateNormalized,durataPrestazione);
+		if(controllaDisponibilita(date,durataPrestazione)){
+			SQLManager.insertPrenotazione(prenotazione, durataPrestazione);
+			return true;
+		}else{
+			return false;
+		}
 		
 	}
 
 	
 	
-	private static boolean controllaDisponibilita(ArrayList<long[]> intervalliDisponibili, Calendar date, long durataPrestazione) {		
+	private static boolean controllaDisponibilita(Calendar date, long durataPrestazione) {	
+		ArrayList<long[]> intervalliDisponibili = getIntervalliDisponibili(date);
 		long[] currInterval = null;
+		Calendar dateNormalized = getInstance();
+		dateNormalized.set(Calendar.HOUR_OF_DAY, date.get(Calendar.HOUR_OF_DAY));
+		dateNormalized.set(Calendar.MINUTE, date.get(Calendar.MINUTE));
+		dateNormalized.set(Calendar.SECOND, date.get(Calendar.SECOND));
 		for (int i = 0; i < intervalliDisponibili.size(); i++) {
 			currInterval = intervalliDisponibili.get(i);
-			if(currInterval[0]<=date.getTimeInMillis() && currInterval[1]>= (date.getTimeInMillis()+durataPrestazione)){
+			System.out.println(printCalendar(getCalendarFromMillis(currInterval[0]))+ "<"+
+					printCalendar(dateNormalized));
+			System.out.println(printCalendar(getCalendarFromMillis(currInterval[1]))+ ">"+
+					printCalendar(getCalendarFromMillis(dateNormalized.getTimeInMillis()+durataPrestazione)));
+			if(currInterval[0]<=dateNormalized.getTimeInMillis() && currInterval[1]>= (dateNormalized.getTimeInMillis()+durataPrestazione)){
 				System.out.println("Confermata disponibilità nell'intervallo "+printCalendar(getCalendarFromMillis(currInterval[0]))+"-"+
 						printCalendar(getCalendarFromMillis(currInterval[1])));
 				return true;
@@ -140,137 +196,14 @@ public class BookingHandler {
 	}
 	
 
-	private static long getDurataFromPrestazione(String prestazione) {
-		String query ="SELECT durata FROM "+ SQLManager.TABLE_PRESTAZIONE+" WHERE nome ='" + prestazione +"'";		
-		Vector<Object[]> data= SQLManager.executeQuery(query);
-		if(data.size()==0){
-			return 0;
-		}else{
-			try {		
-				Date date = dateFormat.parse(data.get(0)[0].toString());
-				Calendar dateCal = getInstance();
-				dateCal.setTime(date);
-				return (dateCal.get(Calendar.HOUR_OF_DAY)*3600+dateCal.get(Calendar.MINUTE)*60+dateCal.get(Calendar.SECOND))*1000;
-				
-			} catch (ParseException e) {				
-				e.printStackTrace();
-				return 0;
-			}
+	private static void addIntervalloDisponibile(ArrayList<long[]> intervalliDisponibili, long from, long to){
+		if(from-to!=0){
+			intervalliDisponibili.add(new long[] {from,to});
+			//System.out.println("Intervallo aggiunto: "+printCalendar(getCalendarFromMillis(from))+"-"+printCalendar(getCalendarFromMillis(to)));
 		}
 	}
-
-
-	public static boolean gestisciPrenotazioneCompleta(PrenotazioneConData prenotazioneCompleta) {
-		
-		return false;
-	}
-	
-	
 	
 
-	
-	private static String dataToSqlFormat(Calendar date){
-		return date.get(Calendar.YEAR)+"-"+date.get(Calendar.MONTH)+"-"+date.get(Calendar.DAY_OF_MONTH);
-	}
-	
-	
-	private static Calendar trovaPrimoIntervalloDisponibile(Calendar from, long durataPrestazioneInMillis){
-		Calendar goalData = from;
-		boolean trovato = false;
-		boolean error = false;	
-		
-		long oneDay = 24 * 60 * 60 * 1000;
-		
-		Calendar inizio = getInstance();
-		Calendar fine = getInstance();			
-		Calendar inizioSuccessivo = getInstance();
-		Calendar fineSuccessivo = getInstance(); 
-		
-		
-		
-		while(trovato == false && error == false){
-			System.out.println("Giorno considerato "+printCalendar(from));
-			String query ="SELECT OraInizio, OraFine FROM "+SQLManager.TABLE_PRENOTAZIONE+" WHERE GiornoInizio ='" + dataToSqlFormat(from)
-			 +"' order BY OraInizio, OraFine";
-			Vector<Object[]> data= SQLManager.executeQuery(query);
-			
-			if(data.size()!=0){
-			int intervalIndex = 0;
-			long currFrom = intervalli.get(intervalIndex)[0];
-			long currTo = 0;
-			
-			//cicla sui dati del database
-			for (int i = 0; i < data.size()-1; i++) {
-				try {
-					inizio.setTime(dateFormat.parse((data.get(i)[0].toString())));
-					fine.setTime(dateFormat.parse((data.get(i)[1].toString())));				
-					inizioSuccessivo.setTime(dateFormat.parse((data.get(i+1)[0].toString())));
-					fineSuccessivo.setTime(dateFormat.parse((data.get(i+1)[1].toString())));
-				} catch (ParseException e) {
-					error = true;
-					e.printStackTrace();
-					break;
-				}
-				currTo = inizio.getTimeInMillis();
-				
-				System.out.println("Intervallo inizio: "+printCalendar(getCalendarFromMillis(intervalli.get(intervalIndex)[0])));
-				System.out.println("Intervallo fine: "+printCalendar(getCalendarFromMillis(intervalli.get(intervalIndex)[1])));
-				System.out.println("Data inizio: "+printCalendar(getCalendarFromMillis(currFrom)));
-				System.out.println("Data fine: "+printCalendar(getCalendarFromMillis(currTo)));
-				
-				if(ciSta(durataPrestazioneInMillis,currFrom,currTo)){
-					trovato = true;
-					break;
-				}else{
-					currFrom = fine.getTimeInMillis();
-					currTo = inizioSuccessivo.getTimeInMillis();
-					/* se il limite destro supera la fine dell'intervallo disponibile e se ci sono altri intervalli allora il limite sinistro
-					* deve essere l'inizio del prossimo intervallo
-					*/
-					
-					if(currTo >= intervalli.get(intervalIndex)[1] && intervalIndex<intervalli.size()-1){
-						intervalIndex++;
-						currFrom = intervalli.get(intervalIndex)[0];
-					}
-				}		
-			}
-			if(trovato){
-				goalData = setTimeOfDataFromMillis(goalData,currFrom);
-				break;
-			}else{
-				if(ciSta(durataPrestazioneInMillis,fineSuccessivo.getTimeInMillis(),intervalli.get(intervalIndex)[1])){
-					trovato = true;					
-					goalData = setTimeOfDataFromMillis(goalData,fineSuccessivo.getTimeInMillis());
-				}else{
-					if(intervalIndex<intervalli.size()-1){
-						trovato = true;
-						intervalIndex++;
-						goalData = setTimeOfDataFromMillis(goalData,intervalli.get(intervalIndex)[0]);
-					}else{
-						//Giorno successivo				
-						from.setTimeInMillis(from.getTimeInMillis() + oneDay);
-					}
-				}				
-			}
-		}else{
-			//Trovato un giorno libero
-			System.out.println("Trovato giorno libero "+printCalendar(from));
-			goalData = from;
-			//imposto l'orario all'inizio del primo intervallo
-			goalData = setTimeOfDataFromMillis(goalData, intervalli.get(0)[0]);
-			trovato = true;
-			break;
-		}
-		}
-		if(trovato){	
-			System.out.println("Data trovata: "+printCalendar(goalData));
-			return goalData;
-		}else{
-			return null;
-		}
-	}
-	
-	
 	/*
 	 * Questo metodo restituisce un arraylist di intervalli disponibili per il giorno date.
 	 * Gli intervalli sono espressi in millisecondi.
@@ -282,9 +215,9 @@ public class BookingHandler {
 		Calendar inizio = getInstance();
 		Calendar fine = getInstance();			
 		Calendar inizioSuccessivo = getInstance();
-		Calendar fineSuccessivo = getInstance(); 
+		Calendar fineUltimaPrenotazione = getInstance(); 
 
-		String query ="SELECT OraInizio, OraFine FROM "+SQLManager.TABLE_PRENOTAZIONE+" WHERE GiornoInizio ='" + dataToSqlFormat(date)
+		String query ="SELECT OraInizio, OraFine FROM "+SQLManager.TABLE_PRENOTAZIONE+" WHERE GiornoInizio ='" + SQLManager.dataToSqlFormat(date)
 		+"' order BY OraInizio, OraFine";
 		Vector<Object[]> data= SQLManager.executeQuery(query);
 
@@ -292,22 +225,22 @@ public class BookingHandler {
 			int intervalIndex = 0;
 			long currFrom = intervalli.get(intervalIndex)[0];
 			long currTo = 0;
-
 			//cicla sui dati del database
-			for (int i = 0; i < data.size()-1; i++) {
+			for (int i = 0; i < data.size() ; i++) {
 				try {
 					inizio.setTime(dateFormat.parse((data.get(i)[0].toString())));
-					fine.setTime(dateFormat.parse((data.get(i)[1].toString())));				
-					inizioSuccessivo.setTime(dateFormat.parse((data.get(i+1)[0].toString())));
-					fineSuccessivo.setTime(dateFormat.parse((data.get(i+1)[1].toString())));
+					fine.setTime(dateFormat.parse((data.get(i)[1].toString())));
+					if(i<data.size()-1)
+						inizioSuccessivo.setTime(dateFormat.parse((data.get(i+1)[0].toString())));
+					else
+						inizioSuccessivo.setTimeInMillis(intervalli.get(intervalIndex)[0]);
 				} catch (ParseException e) {
 					e.printStackTrace();
 					break;
 				}
 				currTo = inizio.getTimeInMillis();
-
-				intervalliDisponibili.add(new long[] {currFrom,currTo});				
-				//System.out.println("Intervallo aggiunto: "+printCalendar(getCalendarFromMillis(currFrom))+"-"+printCalendar(getCalendarFromMillis(currTo)));
+				
+				addIntervalloDisponibile(intervalliDisponibili, currFrom,currTo);								
 				
 				currFrom = fine.getTimeInMillis();
 				currTo = inizioSuccessivo.getTimeInMillis();
@@ -317,40 +250,24 @@ public class BookingHandler {
 				if(currTo >= intervalli.get(intervalIndex)[1] && intervalIndex<intervalli.size()-1){
 					intervalIndex++;
 					currFrom = intervalli.get(intervalIndex)[0];
-				}	
+				}
 			}
-			intervalliDisponibili.add(new long[] {fineSuccessivo.getTimeInMillis(),intervalli.get(intervalIndex)[1]});
-			//System.out.println("Intervallo aggiunto: "+printCalendar(fineSuccessivo)+"-"+printCalendar(getCalendarFromMillis(intervalli.get(intervalIndex)[1])));
-			for (int i = intervalIndex+1; i < intervalli.size(); i++) {
-				intervalliDisponibili.add(new long[] {intervalli.get(i)[0],intervalli.get(i)[1]});
-				//System.out.println("Intervallo aggiunto: "+printCalendar(getCalendarFromMillis(intervalli.get(i)[0]))+"-"+printCalendar(getCalendarFromMillis(intervalli.get(i)[1])));
+			try {
+				fineUltimaPrenotazione.setTime(dateFormat.parse(data.get(data.size()-1)[1].toString()));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			addIntervalloDisponibile(intervalliDisponibili, fineUltimaPrenotazione.getTimeInMillis(),intervalli.get(intervalIndex)[1]);			
+			for (int i = intervalIndex+1; i < intervalli.size(); i++) {			
+				addIntervalloDisponibile(intervalliDisponibili,intervalli.get(i)[0],intervalli.get(i)[1]);				
 			}
 		}else{
 			for (int i = 0; i < intervalli.size(); i++) {
-				intervalliDisponibili.add(new long[] {intervalli.get(i)[0],intervalli.get(i)[1]});
-				//System.out.println("Intervallo aggiunto: "+printCalendar(getCalendarFromMillis(intervalli.get(i)[0]))+"-"+printCalendar(getCalendarFromMillis(intervalli.get(i)[1])));
+				addIntervalloDisponibile(intervalliDisponibili,intervalli.get(i)[0],intervalli.get(i)[1]);				
 			}
 		}
 		return intervalliDisponibili;
-	}
-
-
-	/*
-	 * Questo metodo imposta solo il tempo della data corrispondente ai millisecondi sulla data target passata in input
-	 */
-	private static Calendar setTimeOfDataFromMillis(Calendar target, long dateInMillis) {
-		Calendar result = target;
-		Calendar date = getInstance();
-		date.setTimeInMillis(dateInMillis);
-		result.set(Calendar.HOUR_OF_DAY, date.get(Calendar.HOUR_OF_DAY));
-		result.set(Calendar.MINUTE, date.get(Calendar.MINUTE));
-		result.set(Calendar.SECOND, date.get(Calendar.SECOND));
-		return result;
-	}
-
-
-	private static boolean ciSta(long target, long from, long to){
-		return target+from<=to;
 	}
 	
 	
