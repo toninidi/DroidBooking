@@ -4,62 +4,35 @@ import it.booking.agent.BookingAgent;
 import it.booking.business.SQLManager;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
-//import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.JComponent;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.LayoutStyle;
-import javax.swing.SpringLayout;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.DateFormatter;
-
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
 
 import com.toedter.calendar.JCalendar;
 
 public class MainUI extends JFrame {
 
+
+	private static final long serialVersionUID = 1L;
 	
 	SimpleDateFormat formatter = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG,
 			 DateFormat.LONG, Locale.ITALY);
@@ -176,7 +149,10 @@ public class MainUI extends JFrame {
 	public void initialize_table()
 	{
 		table = new JTable(){
-		      public boolean isCellEditable(int rowIndex, int colIndex) {
+			
+			private static final long serialVersionUID = 1L;
+
+			public boolean isCellEditable(int rowIndex, int colIndex) {
 		          return false;   //Disallow the editing of any cell
 		        }
 		      };
