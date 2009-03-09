@@ -1,8 +1,6 @@
 package it.uniba.ontology;
 
 
-import java.util.Date;
-
 import jade.content.Concept;
 
 public class Cliente implements Concept {
@@ -14,9 +12,7 @@ public class Cliente implements Concept {
 	
 	private String nome;
 	private String cognome;
-	private String telefono;
-	private String prestazione;
-	private Date dataPrenotazione;
+	private String telefono;	
 	
 	
 	
@@ -24,83 +20,50 @@ public class Cliente implements Concept {
 	}
 
 
-
-	public Cliente(String nome, String cognome, String telefono,
-			String prestazione) {
+	public Cliente(String nome, String cognome, String telefono) {
 		super();
 		this.nome = nome;
 		this.cognome = cognome;
 		this.telefono = telefono;
-		this.prestazione = prestazione;
-	}
-	
-	
-
-	public Cliente(String nome, String cognome, String telefono,
-			String prestazione, Date dataPrenotazione) {
-		super();
-		this.nome = nome;
-		this.cognome = cognome;
-		this.telefono = telefono;
-		this.prestazione = prestazione;
-		this.dataPrenotazione = dataPrenotazione;
 	}
 
 
 
-	public String getNome() {
+	public String getNomeCliente() {
 		return nome;
 	}
 
 
 
-	public String getCognome() {
+	public String getCognomeCliente() {
 		return cognome;
 	}
 
 
 
-	public String getTelefono() {
+	public String getTelefonoCliente() {
 		return telefono;
 	}
 
 
 
-	public String getPrestazione() {
-		return prestazione;
-	}
+	
 
-
-
-	public Date getGiornoPrenotazione() {
-		return dataPrenotazione;
-	}
-
-	public void setNome(String nome) {
+	public void setNomeCliente(String nome) {
 		this.nome = nome;
 	}
 
 
 
-	public void setCognome(String cognome) {
+	public void setCognomeCliente(String cognome) {
 		this.cognome = cognome;
 	}
 
 
 
-	public void setTelefono(String telefono) {
+	public void setTelefonoCliente(String telefono) {
 		this.telefono = telefono;
 	}
 
 
-
-	public void setPrestazione(String prestazione) {
-		this.prestazione = prestazione;
-	}
-
-
-
-	public void setGiornoPrenotazione(Date giornoPrenotazione) {
-		this.dataPrenotazione = giornoPrenotazione;
-	}
 }
