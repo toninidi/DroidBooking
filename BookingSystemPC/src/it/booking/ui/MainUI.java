@@ -26,6 +26,7 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JCalendar;
@@ -123,7 +124,7 @@ public class MainUI extends JFrame {
 	}
 	
 	
-	protected void getBooking() {
+	public void getBooking() {
 		SimpleDateFormat formatter = new SimpleDateFormat();
 		formatter.applyPattern("yyyy-MM-dd");
 		Calendar date = Calendar.getInstance();
@@ -163,6 +164,7 @@ public class MainUI extends JFrame {
 		table.setEditingRow(0);
 		table.setEditingColumn(0);
 		table.setName("tbl_prenotazioni");
+		table.updateUI();
 	}
 
 	public void populateTable(String[] columns, Vector<Object[]> data) throws SQLException{
@@ -188,7 +190,7 @@ public class MainUI extends JFrame {
 	}
 	
 	public void initializeLookAndFeels() {
-		// if in classpath thry to load JGoodies Plastic Look & Feel
+		// if in classpath try to load JGoodies Plastic Look & Feel
 		try {		
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 			System.out.println(UIManager.getLookAndFeel().getName());

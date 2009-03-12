@@ -46,6 +46,7 @@ import java.util.Vector;
 			System.out.println("Generated key: " + generatedKey);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Query: "+query);
 			e.printStackTrace();
 		}
 		return generatedKey;

@@ -56,7 +56,8 @@ public class BookingAgent extends Agent {
 		gui.setVisible(true);
 		
 		addBehaviour(new SenderPrestazioniBehaviour());
-		addBehaviour(new BookingRequestServerBehaviour());
+		addBehaviour(new BookingRequestServerBehaviour(gui));
+		addBehaviour(new CancelBookingBehaviour());
 	}
 
 	@Override

@@ -1,12 +1,16 @@
 package it.booking.agent;
 
+import java.util.Calendar;
+
 import it.booking.business.BookingHandler;
 import it.booking.exception.AvailableDayNotFoundException;
 import it.booking.exception.PrestazioneNotFoundException;
+import it.booking.ui.MainUI;
 import it.uniba.ontology.BookingOntology;
 import it.uniba.ontology.Conferma;
 import it.uniba.ontology.Prenotazione;
 import it.uniba.ontology.PrenotazioneConData;
+import it.uniba.ontology.PropostaIntervalli;
 import jade.content.ContentElement;
 import jade.content.ContentManager;
 import jade.content.lang.Codec;
@@ -25,6 +29,12 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 	
 	private ContentManager manager;
 	private Codec codec = new SLCodec();
+	private MainUI gui;
+	
+	public BookingRequestServerBehaviour(MainUI gui) {
+		this.gui=gui;
+	}
+	
 	@Override
 	public void action() {
 		manager = myAgent.getContentManager();
@@ -45,9 +55,9 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			ACLMessage reply = msg.createReply();
 			if(content != null){				
-				System.out.println("ACCEPT_PROPOSAL Preparazione risposta");	  
-				ACLMessage reply = msg.createReply();
+				System.out.println("ACCEPT_PROPOSAL Preparazione risposta");	  				
 				if(content instanceof Prenotazione){
 					System.out.println("E il caso di una PRENOTAZIONE SENZA DATA");
 					reply= setReplyContent(reply, (Prenotazione)content);					
@@ -59,6 +69,8 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 				//System.out.println("Sto mandando il messaggio con Performative "+ reply.getPerformative());
 				myAgent.send(reply);
 				System.out.println("Messaggio inviato "+ reply.getPerformative());
+			}else{
+				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			}
 		}
 		else {
@@ -67,6 +79,7 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 
 	}
 
+	//PRENOTAZIONE SENZA DATA
 	private ACLMessage setReplyContent(ACLMessage reply, Prenotazione content) {
 		Conferma conferma = null;
 		boolean trovatoGiorno = false;
@@ -75,6 +88,7 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			if(conferma!=null){
 				System.out.println("Inserita la prenotazione nel giorno "+conferma.getInizioPrenotazione());
 				trovatoGiorno = true;
+				gui.getBooking();
 			}
 		} catch (AvailableDayNotFoundException e) {
 			// Nessuno giorno libero trovato				
@@ -87,18 +101,17 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 			reply.setOntology(BookingOntology.ONTOLOGY_NAME);
 			reply.setLanguage(codec.getName());
-			
 			try {
 				//System.out.println("Sto riempiendo il contenuto");
 				manager.fillContent(reply, conferma);
 			} catch (CodecException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			} catch (OntologyException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			}
 		}else{
 			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
@@ -107,15 +120,16 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 	}
 	
 	
-	
+	// PRENOTAZIONE CON DATA
 	private ACLMessage setReplyContent(ACLMessage reply, PrenotazioneConData content) {
 		Conferma conferma = null;
 		boolean disponibilita = false;
 		System.out.println("Data richiesta: "+content.getDataPrenotazione());
 		try {
-			conferma = BookingHandler.gestisciPrenotazioneConData((PrenotazioneConData)content);
+			conferma = BookingHandler.gestisciPrenotazioneConData(content);
 			if(conferma!=null){
 				disponibilita = true;
+				gui.getBooking();
 			}
 		} catch (PrestazioneNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -129,14 +143,29 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			} catch (CodecException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			} catch (OntologyException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			}
 		}else{
+			PropostaIntervalli propostaIntervalli = null;
 			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			try {
+				propostaIntervalli = BookingHandler.getIntervalliDisponibili(4, content.getPrestazione(), Calendar.getInstance());
+				manager.fillContent(reply, propostaIntervalli);
+			} catch (PrestazioneNotFoundException e) {				
+				e.printStackTrace();
+				reply.setContent(e.getMessage());
+			} catch (CodecException e) {
+				e.printStackTrace();
+				reply.setContent(e.getMessage());
+			} catch (OntologyException e) {
+				e.printStackTrace();
+				reply.setContent(e.getMessage());
+			}					
+			
 		}
 		return reply;
 		

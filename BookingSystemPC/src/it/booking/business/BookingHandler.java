@@ -1,6 +1,8 @@
 package it.booking.business;
 
 
+import jade.util.leap.List;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,8 +14,10 @@ import it.booking.exception.AvailableDayNotFoundException;
 import it.booking.exception.PrestazioneNotFoundException;
 import it.uniba.ontology.Cliente;
 import it.uniba.ontology.Conferma;
+import it.uniba.ontology.IntervalloPrenotazione;
 import it.uniba.ontology.Prenotazione;
 import it.uniba.ontology.PrenotazioneConData;
+import it.uniba.ontology.PropostaIntervalli;
 
 public class BookingHandler {
 		
@@ -21,6 +25,8 @@ public class BookingHandler {
 	private static final int TENTATIVI_MASSIMI = 100;
 	
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+	
+	private static final long ONEDAY = 24*60*60*1000;
 	
 	static ArrayList<long[]> intervalli = getIntervalliPrenotazione();
 	
@@ -41,11 +47,18 @@ public class BookingHandler {
 		//prenot.setGiornoPrenotazione(date.getTime());
 		prenot.setCliente(new Cliente("ciccio","cappuccio","0803567889"));
 		//gestisciPrenotazioneConData(prenot);		
-		try {
+		/*try {
 			gestisciPrenotazione(prenot);
 		} catch (AvailableDayNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (PrestazioneNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		try {
+			getIntervalliDisponibili(4, "Ecografia", Calendar.getInstance());
 		} catch (PrestazioneNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,11 +73,46 @@ public class BookingHandler {
 		}*/
 		
 	}
+	
+	// TODO correggere gli intervalli restituiti per evitare che ritorni l'epoca ma la data corretta
+	public static PropostaIntervalli getIntervalliDisponibili(int quantita, String prestazione, Calendar date) throws PrestazioneNotFoundException{
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND,0);
+		long durataPrestazione = SQLManager.getDurataFromPrestazione(prestazione);
+		PropostaIntervalli pi = new PropostaIntervalli();
+		List intervalliTrovati = new jade.util.leap.ArrayList();
+		Calendar currDataInizio = Calendar.getInstance();
+		Calendar currDataFine = Calendar.getInstance();
+		boolean raggiuntaQuantita = false;
+		ArrayList<long[]> intervalli;
+		while(!raggiuntaQuantita){
+			intervalli = getIntervalliDisponibili(date);
+			long[] currIntervallo;
+			for(int i=0;i<intervalli.size() && intervalliTrovati.size() != quantita; i++){
+				currIntervallo= intervalli.get(i);
+				if(currIntervallo[1]-currIntervallo[0]>=durataPrestazione){
+					currDataInizio.setTimeInMillis(currIntervallo[0]+date.getTimeInMillis());
+					currDataFine.setTimeInMillis(currIntervallo[1]+date.getTimeInMillis());
+					intervalliTrovati.add(new IntervalloPrenotazione(currDataInizio.getTime(),currDataFine.getTime()));
+				}
+			}
+			if(intervalliTrovati.size()!=quantita){
+				date.setTimeInMillis(date.getTimeInMillis() + ONEDAY);
+			}else{
+				pi.setCentro(BookingAgent.CENTRO);
+				pi.setIntervalli(intervalliTrovati);
+				raggiuntaQuantita = true;
+			}
+			
+		}
+		return pi;
+	}
 
 	
 	public static Conferma gestisciPrenotazione(Prenotazione prenotazione) throws AvailableDayNotFoundException, PrestazioneNotFoundException{		
 		long durataPrestazione = SQLManager.getDurataFromPrestazione(prenotazione.getPrestazione());
-		long oneDay = 24*60*60*1000;
+		
 		Calendar date = Calendar.getInstance();
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
@@ -87,7 +135,7 @@ public class BookingHandler {
 			}
 			if(!trovato){
 				//giorno successivo
-				date.setTimeInMillis(date.getTimeInMillis() + oneDay);
+				date.setTimeInMillis(date.getTimeInMillis() + ONEDAY);
 			}
 			tentativi++;
 		}
