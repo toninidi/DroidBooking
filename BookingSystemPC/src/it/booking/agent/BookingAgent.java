@@ -2,7 +2,8 @@ package it.booking.agent;
 
 import it.booking.business.SQLManager;
 import it.booking.ui.MainUI;
-import it.uniba.ontology.*;
+import it.uniba.ontology.BookingOntology;
+import it.uniba.ontology.CentroPrenotazione;
 import jade.content.ContentManager;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
@@ -52,12 +53,13 @@ public class BookingAgent extends Agent {
 		catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+		
 		gui = new MainUI(this);
 		gui.setVisible(true);
 		
 		addBehaviour(new SenderPrestazioniBehaviour());
 		addBehaviour(new BookingRequestServerBehaviour(gui));
-		addBehaviour(new CancelBookingBehaviour());
+		addBehaviour(new CancelBookingBehaviour(gui));
 	}
 
 	@Override

@@ -125,6 +125,8 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 		Conferma conferma = null;
 		boolean disponibilita = false;
 		System.out.println("Data richiesta: "+content.getDataPrenotazione());
+		
+		// Verifica della disponibilita 
 		try {
 			conferma = BookingHandler.gestisciPrenotazioneConData(content);
 			if(conferma!=null){
@@ -135,23 +137,25 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//Trovata disponibilità 
 		if(disponibilita){				      	   
 			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 			try {
 				//System.out.println("Sto riempiendo il contenuto");
 				manager.fillContent(reply, conferma);
 			} catch (CodecException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			} catch (OntologyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
 			}
-		}else{
+		}else{// No disponiblità
 			PropostaIntervalli propostaIntervalli = null;
 			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			
+			//Inserimento delle proposte degli intervalli liberi
 			try {
 				propostaIntervalli = BookingHandler.getIntervalliDisponibili(4, content.getPrestazione(), Calendar.getInstance());
 				manager.fillContent(reply, propostaIntervalli);

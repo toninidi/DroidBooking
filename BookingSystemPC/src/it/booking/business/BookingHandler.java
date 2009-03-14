@@ -78,19 +78,23 @@ public class BookingHandler {
 	public static PropostaIntervalli getIntervalliDisponibili(int quantita, String prestazione, Calendar date) throws PrestazioneNotFoundException{
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
-		date.set(Calendar.SECOND,0);
-		long durataPrestazione = SQLManager.getDurataFromPrestazione(prestazione);
+		date.set(Calendar.SECOND,0);			
 		PropostaIntervalli pi = new PropostaIntervalli();
 		List intervalliTrovati = new jade.util.leap.ArrayList();
 		Calendar currDataInizio = Calendar.getInstance();
 		Calendar currDataFine = Calendar.getInstance();
 		boolean raggiuntaQuantita = false;
 		ArrayList<long[]> intervalli;
+		
+		long durataPrestazione = SQLManager.getDurataFromPrestazione(prestazione);	
+		
 		while(!raggiuntaQuantita){
 			intervalli = getIntervalliDisponibili(date);
 			long[] currIntervallo;
 			for(int i=0;i<intervalli.size() && intervalliTrovati.size() != quantita; i++){
 				currIntervallo= intervalli.get(i);
+				System.out.println("Intervallo corrente disponibile: "+printCalendar(getCalendarFromMillis(currIntervallo[0]))+"-"+
+						printCalendar(getCalendarFromMillis(currIntervallo[1])));
 				if(currIntervallo[1]-currIntervallo[0]>=durataPrestazione){
 					currDataInizio.setTimeInMillis(currIntervallo[0]+date.getTimeInMillis());
 					currDataFine.setTimeInMillis(currIntervallo[1]+date.getTimeInMillis());
@@ -186,10 +190,10 @@ public class BookingHandler {
 		dateNormalized.set(Calendar.SECOND, date.get(Calendar.SECOND));
 		for (int i = 0; i < intervalliDisponibili.size(); i++) {
 			currInterval = intervalliDisponibili.get(i);
-			System.out.println(printCalendar(getCalendarFromMillis(currInterval[0]))+ "<"+
-					printCalendar(dateNormalized));
-			System.out.println(printCalendar(getCalendarFromMillis(currInterval[1]))+ ">"+
-					printCalendar(getCalendarFromMillis(dateNormalized.getTimeInMillis()+durataPrestazione)));
+			//System.out.println(printCalendar(getCalendarFromMillis(currInterval[0]))+ "<"+
+					//printCalendar(dateNormalized));
+			//System.out.println(printCalendar(getCalendarFromMillis(currInterval[1]))+ ">"+
+					//printCalendar(getCalendarFromMillis(dateNormalized.getTimeInMillis()+durataPrestazione)));
 			if(currInterval[0]<=dateNormalized.getTimeInMillis() && currInterval[1]>= (dateNormalized.getTimeInMillis()+durataPrestazione)){
 				System.out.println("Confermata disponibilità nell'intervallo "+printCalendar(getCalendarFromMillis(currInterval[0]))+"-"+
 						printCalendar(getCalendarFromMillis(currInterval[1])));

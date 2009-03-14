@@ -51,7 +51,7 @@ public class MainUI extends JFrame {
 	 */
 	public MainUI(BookingAgent agent) {
 		super();
-		setTitle("JCalendar");
+		setTitle("Centro "+BookingAgent.CENTRO.getNome()+" - "+BookingAgent.CENTRO.getTelefono());
 		initializeLookAndFeels();
 		getContentPane().setLayout(new BorderLayout());
 		setBounds(100, 100, 423, 512);
