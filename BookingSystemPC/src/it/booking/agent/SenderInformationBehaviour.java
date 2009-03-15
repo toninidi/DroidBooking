@@ -13,7 +13,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class SenderPrestazioniBehaviour extends CyclicBehaviour {
+public class SenderInformationBehaviour extends CyclicBehaviour {
 
 	private static final long serialVersionUID = -7828906716883291071L;
 

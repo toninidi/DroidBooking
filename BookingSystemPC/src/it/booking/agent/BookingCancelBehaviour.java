@@ -6,13 +6,13 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class CancelBookingBehaviour extends CyclicBehaviour {
+public class BookingCancelBehaviour extends CyclicBehaviour {
 	
 	private static final long serialVersionUID = -6427146532108307585L;
 
 	private MainUI gui;
 	
-	public CancelBookingBehaviour(MainUI gui){
+	public BookingCancelBehaviour(MainUI gui){
 		this.gui = gui;
 	}
 	

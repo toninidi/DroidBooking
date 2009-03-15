@@ -1,23 +1,23 @@
 package it.booking.business;
 
 
+import it.booking.agent.BookingAgent;
+import it.booking.exception.AvailableDayNotFoundException;
+import it.booking.exception.PrestazioneNotFoundException;
+import it.uniba.ontology.Conferma;
+import it.uniba.ontology.IntervalloPrenotazione;
+import it.uniba.ontology.Prenotazione;
+import it.uniba.ontology.PrenotazioneConData;
+import it.uniba.ontology.PropostaIntervalli;
 import jade.util.leap.List;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.Vector;
-
-import it.booking.agent.BookingAgent;
-import it.booking.exception.AvailableDayNotFoundException;
-import it.booking.exception.PrestazioneNotFoundException;
-import it.uniba.ontology.Cliente;
-import it.uniba.ontology.Conferma;
-import it.uniba.ontology.IntervalloPrenotazione;
-import it.uniba.ontology.Prenotazione;
-import it.uniba.ontology.PrenotazioneConData;
-import it.uniba.ontology.PropostaIntervalli;
 
 public class BookingHandler {
 		
@@ -30,10 +30,19 @@ public class BookingHandler {
 	
 	static ArrayList<long[]> intervalli = getIntervalliPrenotazione();
 	
+
 	
 	public static void main(String[] args) {
 		
-		Calendar date = Calendar.getInstance();
+		Calendar date = getInstance();
+		System.out.println("PRIMA" + printCalendar(date));
+		//date.setTimeZone(TimeZone.)
+//		System.out.println("PRIMA" + printCalendar(date));
+//		date.set(Calendar.HOUR_OF_DAY, 1);
+//		System.out.println("DOPO " + printCalendar(date));
+//		System.out.println("MILLIS CALCOLATI " +(date.get(Calendar.HOUR_OF_DAY)*3600+date.get(Calendar.MINUTE)*60+date.get(Calendar.SECOND))*1000);
+		
+		/*Calendar date = Calendar.getInstance();
 		date.set(Calendar.YEAR, 2009);
 		date.set(Calendar.MONTH, 2);
 		date.set(Calendar.DAY_OF_MONTH, 23);
@@ -47,7 +56,7 @@ public class BookingHandler {
 		//prenot.setGiornoPrenotazione(date.getTime());
 		prenot.setCliente(new Cliente("ciccio","cappuccio","0803567889"));
 		//gestisciPrenotazioneConData(prenot);		
-		/*try {
+		try {
 			gestisciPrenotazione(prenot);
 		} catch (AvailableDayNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -76,6 +85,7 @@ public class BookingHandler {
 	
 	// TODO correggere gli intervalli restituiti per evitare che ritorni l'epoca ma la data corretta
 	public static PropostaIntervalli getIntervalliDisponibili(int quantita, String prestazione, Calendar date) throws PrestazioneNotFoundException{
+		date.setTimeZone(TimeZone.getTimeZone("GMT"));
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
 		date.set(Calendar.SECOND,0);			
@@ -83,22 +93,25 @@ public class BookingHandler {
 		List intervalliTrovati = new jade.util.leap.ArrayList();
 		Calendar currDataInizio = Calendar.getInstance();
 		Calendar currDataFine = Calendar.getInstance();
+	// TODO rimuovere 
+//		currDataInizio.setTimeZone(TimeZone.getTimeZone("GMT"));
+//		currDataFine.setTimeZone(TimeZone.getTimeZone("GMT"));		
 		boolean raggiuntaQuantita = false;
 		ArrayList<long[]> intervalli;
 		
 		long durataPrestazione = SQLManager.getDurataFromPrestazione(prestazione);	
-		
+		System.out.println("Durata prestazione: "+durataPrestazione);
 		while(!raggiuntaQuantita){
 			intervalli = getIntervalliDisponibili(date);
 			long[] currIntervallo;
 			for(int i=0;i<intervalli.size() && intervalliTrovati.size() != quantita; i++){
 				currIntervallo= intervalli.get(i);
-				System.out.println("Intervallo corrente disponibile: "+printCalendar(getCalendarFromMillis(currIntervallo[0]))+"-"+
-						printCalendar(getCalendarFromMillis(currIntervallo[1])));
-				if(currIntervallo[1]-currIntervallo[0]>=durataPrestazione){
+				
+				if(currIntervallo[1]>currIntervallo[0] && currIntervallo[1]-currIntervallo[0]>=durataPrestazione){
 					currDataInizio.setTimeInMillis(currIntervallo[0]+date.getTimeInMillis());
 					currDataFine.setTimeInMillis(currIntervallo[1]+date.getTimeInMillis());
 					intervalliTrovati.add(new IntervalloPrenotazione(currDataInizio.getTime(),currDataFine.getTime()));
+					System.out.println("Intervallo corrente aggiunto: "+printCalendar(currDataInizio)+"-"+printCalendar(currDataFine));
 				}
 			}
 			if(intervalliTrovati.size()!=quantita){
@@ -219,7 +232,7 @@ public class BookingHandler {
 		inizio1.set(Calendar.MINUTE, 30);
 		Calendar fine1 = getInstance();
 		fine1.set(Calendar.HOUR_OF_DAY, 18);
-		fine1.set(Calendar.MINUTE, 0);
+		fine1.set(Calendar.MINUTE, 30);
 		result.add(new long[] {inizio1.getTimeInMillis(), fine1.getTimeInMillis()});
 		return result;		
 	}
@@ -231,12 +244,17 @@ public class BookingHandler {
 	 * Il metodo fa si che venga presa la mezzanotte di oggi
 	 */
 	private static Calendar getInstance() {
-		Calendar instance = Calendar.getInstance();		
+		Calendar instance = Calendar.getInstance();	
+		//instance.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Date date = null;
 		try {
-			instance.setTime(dateFormat.parse("00:00:00"));
-		} catch (ParseException e) {			
+			date = dateFormat.parse("00:00:00");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
+		instance.setTime(date);
+		//instance.setTimeInMillis(0);
 		return instance;
 	}
 
@@ -272,6 +290,8 @@ public class BookingHandler {
 	private static ArrayList<long[]> getIntervalliDisponibili(Calendar date){
 		ArrayList<long[]> intervalliDisponibili = new ArrayList<long[]>();
 
+		//System.out.println("Data richiesta: "+printCalendar(date));
+		
 		Calendar inizio = getInstance();
 		Calendar fine = getInstance();			
 		Calendar inizioSuccessivo = getInstance();
@@ -299,6 +319,10 @@ public class BookingHandler {
 					break;
 				}
 				currTo = inizio.getTimeInMillis();
+				if(currTo >= intervalli.get(intervalIndex)[1])
+					currTo = intervalli.get(intervalIndex)[1];
+					
+				
 				
 				addIntervalloDisponibile(intervalliDisponibili, currFrom,currTo);								
 				

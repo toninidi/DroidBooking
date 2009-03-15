@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
-import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JCalendar;
@@ -54,7 +53,7 @@ public class MainUI extends JFrame {
 		setTitle("Centro "+BookingAgent.CENTRO.getNome()+" - "+BookingAgent.CENTRO.getTelefono());
 		initializeLookAndFeels();
 		getContentPane().setLayout(new BorderLayout());
-		setBounds(100, 100, 423, 512);
+		setBounds(100, 100, 550, 512);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		final JSplitPane splitPane = new JSplitPane();
