@@ -18,12 +18,18 @@ public class BookingCancelBehaviour extends CyclicBehaviour {
 	
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CANCEL);
-		ACLMessage msg = myAgent.receive(mt);
+		ACLMessage msg = myAgent.receive(mt);		
 		if (msg != null) {
+			
+			
 			int key =(Integer.parseInt(msg.getContent()));
 			SQLManager.deletePrenotazione(key);
 			System.out.println("Cancel message:rimossa tupla "+key);
 			gui.getBooking();
+			
+			ACLMessage reply = msg.createReply();
+			reply.setPerformative(ACLMessage.CONFIRM);
+			myAgent.send(reply);
 		}
 		else {
 			block();

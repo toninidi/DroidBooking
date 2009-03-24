@@ -11,6 +11,7 @@ import it.uniba.ontology.Conferma;
 import it.uniba.ontology.Prenotazione;
 import it.uniba.ontology.PrenotazioneConData;
 import it.uniba.ontology.PropostaIntervalli;
+import jade.content.Concept;
 import jade.content.ContentElement;
 import jade.content.ContentManager;
 import jade.content.lang.Codec;
@@ -18,6 +19,7 @@ import jade.content.lang.Codec.CodecException;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.UngroundedException;
+import jade.content.onto.basic.Action;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -41,10 +43,13 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE), MessageTemplate.MatchOntology(BookingOntology.ONTOLOGY_NAME));
 		ACLMessage msg = myAgent.receive(mt);
 		ContentElement content = null;
+		Concept action = null;
 		if (msg != null) {
 			System.out.println("ACCEPT_PROPOSAL Message received. Process it");	          
 			try {
-				content = manager.extractContent(msg);			
+				content = manager.extractContent(msg);
+				action = ((Action)content).getAction();
+
 			} catch (UngroundedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -56,15 +61,15 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 				e1.printStackTrace();
 			}
 			ACLMessage reply = msg.createReply();
-			if(content != null){				
+			if(action != null){				
 				System.out.println("ACCEPT_PROPOSAL Preparazione risposta");	  				
-				if(content instanceof Prenotazione){
+				if(action instanceof Prenotazione){
 					System.out.println("E il caso di una PRENOTAZIONE SENZA DATA");
-					reply= setReplyContent(reply, (Prenotazione)content);					
+					reply= setReplyContent(reply, (Prenotazione)action);					
 
-				}else if(content instanceof PrenotazioneConData){
+				}else if(action instanceof PrenotazioneConData){
 					System.out.println("E il caso di una PRENOTAZIONE CON DATA");
-					reply= setReplyContent(reply, (PrenotazioneConData)content);	
+					reply= setReplyContent(reply, (PrenotazioneConData)action);	
 				}	
 				//System.out.println("Sto mandando il messaggio con Performative "+ reply.getPerformative());
 				myAgent.send(reply);
@@ -103,7 +108,7 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			reply.setLanguage(codec.getName());
 			try {
 				//System.out.println("Sto riempiendo il contenuto");
-				manager.fillContent(reply, conferma);
+				manager.fillContent(reply, new Action(myAgent.getAID(),conferma));
 			} catch (CodecException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -143,7 +148,7 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 			try {
 				//System.out.println("Sto riempiendo il contenuto");
-				manager.fillContent(reply, conferma);
+				manager.fillContent(reply, new Action(myAgent.getAID(),conferma));
 			} catch (CodecException e) {
 				e.printStackTrace();
 				reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
@@ -158,7 +163,7 @@ public class BookingRequestServerBehaviour extends CyclicBehaviour {
 			//Inserimento delle proposte degli intervalli liberi
 			try {
 				propostaIntervalli = BookingHandler.getIntervalliDisponibili(4, content.getPrestazione(), Calendar.getInstance());
-				manager.fillContent(reply, propostaIntervalli);
+				manager.fillContent(reply, new Action(myAgent.getAID(),propostaIntervalli));
 			} catch (PrestazioneNotFoundException e) {				
 				e.printStackTrace();
 				reply.setContent(e.getMessage());

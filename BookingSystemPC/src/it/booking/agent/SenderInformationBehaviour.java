@@ -33,14 +33,11 @@ public class SenderInformationBehaviour extends CyclicBehaviour {
 			reply.setPerformative(ACLMessage.INFORM);
 			reply.setLanguage(codec.getName());
 			reply.setOntology(bookingOntology.getName());
-			CentroPrenotazione centro = BookingAgent.CENTRO;
-			Action action = new Action();
-			action.setActor(myAgent.getAID());
-			action.setAction(centro);			
+			CentroPrenotazione centro = BookingAgent.CENTRO;			
 
 			//reply.setContentObject(prestazioni);
 			try {
-				manager.fillContent(reply, action);
+				manager.fillContent(reply, new Action(myAgent.getAID(),centro));
 			} catch (CodecException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
