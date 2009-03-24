@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:padding="5px" android:id="@+id/l_prenotazione">
+
+
+
+
+
+
+<RelativeLayout android:id="@+id/RelativeLayout02" android:layout_height="wrap_content" android:layout_marginTop="3px" android:layout_width="fill_parent">
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:text="Data:" android:id="@+id/item_intervallo_tv2"></TextView>
+<TextView android:layout_height="wrap_content" android:layout_alignParentRight="true" android:layout_width="wrap_content" android:id="@+id/item_intervallo_tv_data"></TextView>
+</RelativeLayout>
+
+
+
+<RelativeLayout android:id="@+id/RelativeLayout03" android:layout_width="wrap_content" android:layout_height="wrap_content"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:text="Ora:" android:id="@+id/item_intervallo_TextView03"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true" android:id="@+id/item_intervallo_tv_Ora"></TextView>
+</RelativeLayout>
+
+</LinearLayout>

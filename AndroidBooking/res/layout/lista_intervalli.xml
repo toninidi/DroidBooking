@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:padding="5px">
+
+
+
+<TextView android:layout_height="wrap_content" android:id="@+id/lista_intervalli_tv_nomeCentro" android:textSize="25px" android:layout_width="fill_parent"></TextView><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/lista_intervalli_tv_viaCentro"></TextView><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:typeface="normal" android:id="@+id/lista_intervalli_tv_intervalli" android:text="@string/lista_intervalli_tv_intervalli"></TextView>
+
+
+<ListView android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_marginTop="5px" android:id="@+id/lista_intervalli_lvIntervalli"></ListView>
+
+
+
+</LinearLayout>

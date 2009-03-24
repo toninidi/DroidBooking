@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+android:id="@+id/widget67"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:orientation="vertical"
+xmlns:android="http://schemas.android.com/apk/res/android"
+>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/prenotazione_tv_nomeCentro" android:textSize="25px"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/prenotazione_tv_viaCentro"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/selezione_tv_prestazioni" android:text="@string/selezione_tv_prestazioni" android:layout_marginTop="10px"></TextView><Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/prenotazione_sp_prestazioni"></Spinner>
+
+<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/prenotazione_cb_preferenza" android:text="@string/prenotazione_cb_preferenza"></CheckBox>
+
+
+
+
+
+
+<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/prenotazione_ll_"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giorno prenotazione" android:id="@+id/prenotazione_tv_giorno"></TextView><TableLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="visible" android:stretchColumns="0" android:id="@+id/Table02"><TableRow android:id="@+id/TableRow01"  android:layout_width="wrap_content" android:layout_height="wrap_content" android:focusable="false"><EditText android:layout_width="wrap_content" android:layout_alignParentLeft="true" android:id="@+id/prenotazione_et_giorno" android:layout_height="fill_parent" android:focusable="false" android:focusableInTouchMode="false"></EditText><Button android:layout_width="wrap_content" android:layout_alignParentRight="true" android:id="@+id/prenotazione_bt_setgiorno" android:layout_height="fill_parent" android:text="@string/prenotazione_bt_set"></Button></TableRow></TableLayout><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ora prenotazione" android:id="@+id/prenotazione_tv_ora"></TextView><TableLayout android:id="@+id/TableLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:stretchColumns="0"><TableRow android:id="@+id/TableRow02" android:layout_width="wrap_content" android:layout_height="wrap_content"><EditText android:layout_width="wrap_content" android:layout_height="fill_parent" android:id="@+id/prenotazione_et_ora" android:focusable="false" android:focusableInTouchMode="false"></EditText>
+<Button android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="@string/prenotazione_bt_set" android:id="@+id/prenotazione_bt_setora"></Button>
+</TableRow>
+</TableLayout>
+
+</LinearLayout><RelativeLayout android:id="@+id/RelativeLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content"><Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_alignParentRight="true" android:text="@string/prenotazione_bt_intervalli" android:id="@+id/prenotazione_bt_intervalli" android:visibility="invisible"></Button></RelativeLayout>
+
+
+</TableLayout>

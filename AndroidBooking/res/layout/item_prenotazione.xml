@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:id="@+id/l_prenotazione" android:padding="10px">
+
+<TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:textSize="9pt" android:id="@+id/item_prenotazione_tv_Dottore"></TextView><RelativeLayout android:id="@+id/RelativeLayout03" android:layout_width="wrap_content" android:layout_height="wrap_content"><TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/item_prenotazione_tv_telefono" android:layout_alignParentLeft="true"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/item_prenotazione_tv_NumeroCentro" android:layout_alignParentRight="true"></TextView>
+</RelativeLayout>
+
+
+<RelativeLayout android:id="@+id/RelativeLayout01" android:layout_height="wrap_content" android:layout_marginTop="5px" android:layout_width="fill_parent">
+<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Prestazione:" android:layout_alignParentLeft="true"></TextView>
+<TextView android:layout_height="wrap_content" android:layout_alignParentRight="true" android:layout_width="wrap_content" android:id="@+id/item_prenotazione_tv_Prestazione"></TextView>
+</RelativeLayout>
+
+<RelativeLayout android:id="@+id/RelativeLayout02" android:layout_height="wrap_content" android:layout_marginTop="3px" android:layout_width="fill_parent">
+<TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:text="Data:"></TextView>
+<TextView android:layout_height="wrap_content" android:layout_alignParentRight="true" android:layout_width="wrap_content" android:id="@+id/item_prenotazione_tv_Data"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true" android:id="@+id/item_prenotazione_tv_id_key" android:layout_alignParentLeft="true" android:visibility="invisible">
+	</TextView></RelativeLayout>
+
+
+
+
+</LinearLayout>

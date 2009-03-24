@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="bt_book">Make a Booking</string>
+<string name="bt_find">Find a Book Center</string>
+<string name="bt_exit">Esci</string>
+<string name="app_name">The Booking System</string>
+<string name="bt_conferma_prenotazione">Conferma Prenotazione</string>
+<string name="bt_prenotazione_rapida">Prenotazione rapida</string>
+<string name="warning_dialog">Attenzione</string>
+<string name="error_dialog">Errore</string>
+<string name="bt_settings">Settings</string>
+<string name="setting_tv_cognome">Cognome</string>
+<string name="settings_tv_nome">Nome</string>
+<string name="settings_tv_numero">Numero di Telefono</string>
+<string name="settings_tv_indirizzo">Indirizzo</string>
+
+<string name="settings_bt_save">Save</string>
+<string name="al_settings_empty">Inserire tutti i campi</string>
+<string name="al_booking_pren_number">Devi inserire il numero della prenotazione</string>
+<string name="al_settings_save">Le impostazioni sono state salvate correttamente</string>
+<string name="al_settings_add">Inserire le impostazione dal menu Settings</string>
+<string name="settings_tv_inserisci">Inserisci alcuni dati necessari ad effettuare le prenotazioni.</string>
+<string name="selezione_tv_prestazioni">Seleziona la prestazione:</string>
+<string name="prenotazione_bt_set">Set</string>
+<string name="prenotazione_cb_preferenza">Stabilisci data prenotazione</string>
+<string name="lista_intervalli_tv_intervalli">Prossime date disponibili:</string>
+
+<!-- JADE CONNECTION PROPERTIES -->
+<string name="host">31.241.131.103</string>
+<string name="port">1099</string>
+<string name="msisdn">android</string>
+<string name="platform_ACC">http://XELA:7778/acc</string>
+<string name="jade_container">XELA:1099/JADE</string>
+
+
+
+<string name="al_main_inserisci_numero">Inserisci il numero</string>
+<string name="connessione_jade_tv_caricamento">Connessione in corso...</string>
+
+<string name="connessione_jade_attendere">Attendere</string>
+<string name="al_connessione_errore_connessione">Errore nella connessione</string>
+<string name="al_connessione_timeout">Non è stato possibile connettersi entro il tempo stabilito</string>
+<string name="al_connessione_errore_comando">Non è possibile eseguire il comando</string>
+<string name="al_connessione_errore_generico">Errore nella connessione</string>
+<string name="al_booking_prestazione">Selezionare una prestazione</string>
+<string name="calendar_prenotazione">Prenotazione: </string>
+
+<string name="prenotazione_bt_intervalli">Intervalli disponibili</string>
+<string name="al_intervalli_disponibili">Intervalli disponibili:</string>
+<string name="al_data_occupata">La data richiesta non è disponibile.\nPer visualizzare gli intervalli disponibili cliccare sull\'apposito pulsante</string>
+<string name="al_booking_prenotazione_confermata">Prenotazione Confermata</string>
+<string name="al_agente_non_trovato">Centro prenotazione non trovato</string>
+<string name="al_main_cancellata">Prenotazione cancellata</string>
+<string name="item_prenotazione_tv_telefono">Telefono:</string>
+<string name="main_nessuna_prenotazione">Nessuna prenotazione effettuata</string>
+<string name="main_prenotazioni_effettuate">Prenotazioni Effettuate:</string>
+</resources>

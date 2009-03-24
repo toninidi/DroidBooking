@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/TableLayout01" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+<TextView android:id="@+id/TextView05" android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="@string/settings_tv_inserisci"></TextView><TextView android:id="@+id/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView><TextView android:id="@+id/TextView01" android:text="@string/setting_tv_cognome" android:layout_height="wrap_content" android:layout_width="fill_parent"></TextView>
+<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/settings_et_cognome"></EditText>
+<TextView android:id="@+id/TextView02" android:layout_height="wrap_content" android:text="@string/settings_tv_nome" android:layout_width="fill_parent"></TextView>
+<EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/settings_et_nome"></EditText>
+
+<TextView android:id="@+id/TextView03" android:layout_height="wrap_content" android:text="@string/settings_tv_numero" android:layout_width="fill_parent"></TextView>
+<EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/settings_et_numero"></EditText>
+<TextView android:id="@+id/TextView04" android:layout_height="wrap_content" android:text="@string/settings_tv_indirizzo" android:layout_width="fill_parent"></TextView>
+<EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/settings_et_indirizzo"></EditText>
+<RelativeLayout android:id="@+id/RelativeLayout01" android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:layout_width="wrap_content">
+
+<Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_alignParentRight="true" android:text="@string/settings_bt_save" android:id="@+id/settings_bt_save"></Button>
+
+</RelativeLayout>
+
+
+</LinearLayout>
